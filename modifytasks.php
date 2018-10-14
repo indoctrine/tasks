@@ -27,7 +27,7 @@
     </style>
   </head>
   <body>
-    <a href="#" onClick="completed()" id="showhide">Hide Complete</a>
+    <a href="#" onClick="showhidecomp()" id="showhide">Hide Complete</a>
     <br><br>
     <?php
       class modifytasks{
@@ -48,7 +48,7 @@
           $sql->execute(['taskid' => $task_id]);
         }
 
-        public function displayincompletetasks(){
+        public function displaytasks(){
           $sql = 'SELECT task_id, due_date, priority, completed, description FROM tasks'; //WHERE completed = 0
           echo "<table id='tasks'>
             <tbody>
@@ -77,18 +77,17 @@
       }
 
       $task = new modifytasks;
-      $task->displayincompletetasks();
+      $task->displaytasks();
     ?>
     <script type="text/javascript">
-        var counter = 1;
-        var rows = "<?= count($task->taskid) ?>";
+        var flag = true;
         var tasks = <?= json_encode($task->taskid) ?>;
         var numtasks = Object.keys(tasks).length;
         var i;
 
-        function completed(){
+        function showhidecomp(){
           for(i = 1; i <= numtasks; i++){
-            if(counter % 2 != 0){
+            if(flag == true){
               if(document.getElementById('comp_' + tasks[i]).innerHTML == "Yes"){
                 document.getElementById('tbl_' + tasks[i]).style.display = "none";
                 document.getElementById('showhide').innerHTML = "Show Complete";
@@ -101,7 +100,7 @@
               }
             }
           }
-          counter++;
+          flag = !flag;
         }
     </script>
   </body>
