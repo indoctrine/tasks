@@ -6,8 +6,10 @@
                       SEE addtasks.php FOR TODO
 
     CHANGES:
-      14 October 2018 - Transferred modification and output to separate file.
+      14 October 2018 - File created
+                      - Transferred modification and output to this separate file.
                       - Show/Hide Completed functionality added.
+      16 October 2018 - Added mark complete and delete functionality.
 */
 ?>
 <!doctype html>
@@ -27,6 +29,8 @@
     </style>
   </head>
   <body>
+    <a href="addtasks.php">Add More Tasks</a>
+    <br><br>
     <a href="#" onClick="showhidecomp()" id="showhide">Hide Complete</a>
     <br><br>
     <?php
@@ -39,17 +43,34 @@
           $this->pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, false); //Turns off prepared statement(?) emulate.
           }
 
-        private function iscomplete($item){
-          return $item == 0 ? "No" : "Yes";
+        public function markdelete($task_id, $action){
+          if($this->isvalidtaskid($task_id)){
+            if($action == "delete"){
+              $sql = $this->pdo->prepare('DELETE FROM tasks WHERE task_id = :taskid');
+              $sql->execute(['taskid' => $task_id]);
+            }
+            else if($action == "mark"){
+              $sql = $this->pdo->prepare('UPDATE tasks set completed = NOT completed WHERE task_id = :taskid');
+              $sql->execute(['taskid' => $task_id]);
+            }
+            else{
+              echo "Unable to perform that task";
+            }
+          }
         }
 
-        public function markcomplete($task_id){
-          $sql = $this->pdo->prepare('UPDATE tasks set completed = 1 where task_id = :taskid');
-          $sql->execute(['taskid' => $task_id]);
+        private function isvalidtaskid($id){
+          foreach($this->taskid as $key => $value){
+            if($id == $value){
+              return 1;
+            }
+          }
+          return 0;
         }
 
         public function displaytasks(){
-          $sql = 'SELECT task_id, due_date, priority, completed, description FROM tasks'; //WHERE completed = 0
+          $getself = htmlspecialchars($_SERVER['PHP_SELF']);
+          $sql = 'SELECT task_id, due_date, priority, completed, description FROM tasks ORDER BY completed, due_date ASC';
           echo "<table id='tasks'>
             <tbody>
               <tr>
@@ -59,7 +80,7 @@
                 <th>Description</th>
               </tr>";
             ?>
-          <form method='post' id='table' action='<?=htmlspecialchars($_SERVER['PHP_SELF']);?>'>
+          <form method='post' id='table' action='<?=$getself;?>'>
             <?php
           $i = 1;
           foreach($this->pdo->query($sql) as $row){
@@ -68,40 +89,60 @@
             echo "<td>" . $row['priority'] . "</td>";
             echo "<td id='comp_" . $this->taskid[$i] . "'>" . $this->iscomplete($row['completed']) . "</td>";
             echo "<td>" . $row['description'] . "</td>";
-            echo "<td><input type='button' id='delete' name='del_" . $this->taskid[$i] . "' value='X' onClick='this.form.submit()'></td>";
-            echo "<td><input type='button' id='markcomplete' name='mark_" . $this->taskid[$i] . "' value='✓' onClick='this.form.submit()'></td>";
+            echo "<td><button type='submit' id='delete' name='delete' form='table' value='" . $this->taskid[$i] . "' formaction='" . $getself . "'>X</button></td>";
+            echo "<td><button type='submit' id='markcomplete' name='mark' form='table' value='" . $this->taskid[$i] . "' formaction='" . $getself . "'>✓</button></td>";
             $i++;
           }
           echo "</tbody></table></form>";
+        }
+
+        private function iscomplete($item){
+          return $item == 0 ? "No" : "Yes";
         }
       }
 
       $task = new modifytasks;
       $task->displaytasks();
+      foreach(array("mark", "delete") as $index){
+        if(!isset($_POST[$index])){
+          continue;
+        }
+        switch($index){
+          case "mark":
+            $task->markdelete($_POST[$index], $index);
+            break;
+          case "delete":
+            $task->markdelete($_POST[$index], $index);
+            break;
+          default:
+            break;
+        }
+        echo "<meta http-equiv='refresh' content='0'>";
+      }
     ?>
     <script type="text/javascript">
-        var flag = true;
-        var tasks = <?= json_encode($task->taskid) ?>;
-        var numtasks = Object.keys(tasks).length;
-        var i;
+      var flag = true;
+      var tasks = <?= json_encode($task->taskid) ?>;
+      var numtasks = Object.keys(tasks).length;
+      var i;
 
-        function showhidecomp(){
-          for(i = 1; i <= numtasks; i++){
-            if(flag == true){
-              if(document.getElementById('comp_' + tasks[i]).innerHTML == "Yes"){
-                document.getElementById('tbl_' + tasks[i]).style.display = "none";
-                document.getElementById('showhide').innerHTML = "Show Complete";
-              }
-            }
-            else{
-              if(document.getElementById('comp_' + tasks[i]).innerHTML == "Yes"){
-                document.getElementById('tbl_' + tasks[i]).style.display = "table-row";
-                document.getElementById('showhide').innerHTML = "Hide Complete";
-              }
+      function showhidecomp(){
+        for(i = 1; i <= numtasks; i++){
+          if(flag == true){
+            if(document.getElementById('comp_' + tasks[i]).innerHTML == "Yes"){
+              document.getElementById('tbl_' + tasks[i]).style.display = "none";
+              document.getElementById('showhide').innerHTML = "Show Complete";
             }
           }
-          flag = !flag;
+          else{
+            if(document.getElementById('comp_' + tasks[i]).innerHTML == "Yes"){
+              document.getElementById('tbl_' + tasks[i]).style.display = "table-row";
+              document.getElementById('showhide').innerHTML = "Hide Complete";
+            }
+          }
         }
+        flag = !flag;
+      }
     </script>
   </body>
 </html>

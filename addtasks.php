@@ -13,12 +13,13 @@
                         caused issues with intialising the object and being able todo
                         output the contents of the database without submitting the form.
                       - Added iscomplete() and markcomplete() methods.
+                      - Separated display and modify to its own file.
 
     TO DO:
       ***Basic Functionality***
       - Insert records incl. sanitising ✓
-      - Delete records
-      - Mark completion of tasks
+      - Delete records ✓
+      - Mark completion of tasks ✓
       - Output entire task list ✓
 
       ***Intermediate Functions***
