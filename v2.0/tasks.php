@@ -35,15 +35,17 @@ echo "<pre>";
         function __construct(){
           require_once('db.php');
           $this->conn = new Database('localhost', 'tasks', 'tasks', 'abc123');
-          }
         }
+      }
 
       class TaskList extends DatabaseConnectedClass{
         private $name;
         public $tasks = [];
 
         function __construct(){
-          $tasks[0] = new Task;
+          $inittask = new Task;
+          $inittask->populatetasks();
+          //$inittask = 0;
         }
       }
 
@@ -53,14 +55,32 @@ echo "<pre>";
         private $due_date;
         private $description;
         private $completed;
+        private $alltasks;
 
         function __construct(){
+          $i = 0;
           parent::__construct();
-          $this->conn->preparedb('SELECT * FROM tasks');
-          print_r($this->conn->executedb());
+          //print_r($this->conn->query("SELECT * FROM tasks"));
+          //$this->conn->prepare('INSERT INTO tasks (due_date, priority, description) VALUES (:duedate, :priority, :description)');
+          //$this->conn->execute(['duedate' => '2018-11-03', 'priority' => 5, 'description' => 'Hello World']);
         }
 
-        public function validatepost(){
+        public function populatetasks(){
+          $i = 0;
+          $alltasks = "SELECT * from tasks";
+
+          foreach($this->conn->query($alltasks) as $row){
+            //print_r($key[$value]);
+            $this->tasks[$i] = new Task();
+            $tasks[$i]->task_id = $row['task_id'];
+            //$this->$task_id = $key[$value];
+            echo "Loop $i";
+            print_r($this->task_id[$i]);
+            $i++;
+          }
+        }
+
+        private function validatepost(){ //NOT IN USE YET
           $this->priority = GetPost('priority', INT, 5);
 
           if($this->priority < 1 || $this->priority > 5){ //Valid range for priority is 1-5.

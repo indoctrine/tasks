@@ -8,6 +8,7 @@
                           - Added connect and disconnect functions.
           20 October 2018 - Added query, execute and prepare functions for
                             abstracting PDO
+          3 November 2018 - Added ability to pass values to a prepared statement.
 */
       class Database{
         private $con = false;
@@ -44,17 +45,18 @@
           $this->con = false;
         }
 
-        public function querydb($querystring){
+        public function query($querystring){
           return $this->pdo->query($querystring)->fetchAll(PDO::FETCH_ASSOC);
         }
 
-        public function preparedb($pstmt){
+        public function prepare($pstmt){
           $this->execstmt = $this->pdo->prepare($pstmt);
         }
 
-        public function executedb(){
-          $this->execstmt->execute();
-          return $results = $this->execstmt->fetchAll();
+        public function execute($params = null){ //Where $params is an array of values.
+          //Can be daisychained to fetchAll() or other methods as required
+          $results = $this->execstmt->execute($params);
+          return $this->execstmt;
         }
       }
 ?>
