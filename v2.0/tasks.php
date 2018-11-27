@@ -7,6 +7,8 @@
 
         CHANGES:
           20 October 2018 - File created.
+          25-27 November 2018 - Wrote method to push all data into objects.
+                              - Learnt about PDO::FETCH_CLASS
 
         TO DO:
           ***Basic Functionality***
@@ -43,41 +45,28 @@ echo "<pre>";
         public $tasks = [];
 
         function __construct(){
-          $inittask = new Task;
-          $inittask->populatetasks();
-          //$inittask = 0;
-        }
-      }
-
-      class Task extends DatabaseConnectedClass{
-        private $task_id;
-        private $priority;
-        private $due_date;
-        private $description;
-        private $completed;
-        private $alltasks;
-
-        function __construct(){
-          $i = 0;
           parent::__construct();
-          //print_r($this->conn->query("SELECT * FROM tasks"));
-          //$this->conn->prepare('INSERT INTO tasks (due_date, priority, description) VALUES (:duedate, :priority, :description)');
-          //$this->conn->execute(['duedate' => '2018-11-03', 'priority' => 5, 'description' => 'Hello World']);
+          $this->populatetasks();
         }
 
         public function populatetasks(){
           $i = 0;
           $alltasks = "SELECT * from tasks";
 
-          foreach($this->conn->query($alltasks) as $row){
-            //print_r($key[$value]);
-            $this->tasks[$i] = new Task();
-            $tasks[$i]->task_id = $row['task_id'];
-            //$this->$task_id = $key[$value];
-            echo "Loop $i";
-            print_r($this->task_id[$i]);
+          foreach($this->conn->query($alltasks, "class", "Task") as $key => $value){
+            $this->tasks[$i] = $value;
             $i++;
           }
+        }
+      }
+
+      class Task extends DatabaseConnectedClass{
+
+        function __construct(){
+          //$i = 0;
+          //print_r($this->conn->query("SELECT * FROM tasks"));
+          //$this->conn->prepare('INSERT INTO tasks (due_date, priority, description) VALUES (:duedate, :priority, :description)');
+          //$this->conn->execute(['duedate' => '2018-11-03', 'priority' => 5, 'description' => 'Hello World']);
         }
 
         private function validatepost(){ //NOT IN USE YET

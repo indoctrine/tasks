@@ -9,6 +9,7 @@
           20 October 2018 - Added query, execute and prepare functions for
                             abstracting PDO
           3 November 2018 - Added ability to pass values to a prepared statement.
+          27 November 2018 - Added support for different fetch modes on query().
 */
       class Database{
         private $con = false;
@@ -45,8 +46,28 @@
           $this->con = false;
         }
 
-        public function query($querystring){
-          return $this->pdo->query($querystring)->fetchAll(PDO::FETCH_ASSOC);
+        public function query($querystring, $fetchmode = "assoc", $optclass = null){
+          /*
+          $querystring (string) = SQL query,
+          $fetchmode (string) = Human readable PDO fetch mode
+          $optclass (string) = Optional class to output to when using PDO::FETCH_CLASS
+          */
+
+          switch($fetchmode){
+            case "class":
+              $fetchmode = PDO::FETCH_CLASS;
+              break;
+            case "assoc":
+              $fetchmode = PDO::FETCH_ASSOC;
+              break;
+            case "numeric":
+              $fetchmode = PDO::FETCH_NUM;
+              break;
+            default:
+              $fetchmode = PDO::FETCH_ASSOC;
+          }
+
+          return $fetchmode == PDO::FETCH_CLASS ? $this->pdo->query($querystring)->fetchAll($fetchmode, $optclass) : $this->pdo->query($querystring)->fetchAll($fetchmode);
         }
 
         public function prepare($pstmt){
