@@ -6,9 +6,10 @@
                           An exercise in OO programming.
 
         CHANGES:
-          20 October 2018 - File created.
+          20 October 2018     - File created.
           25-27 November 2018 - Wrote method to push all data into objects.
                               - Learnt about PDO::FETCH_CLASS
+          28 November 2018    - Array is now indexed by task_id
 
         TO DO:
           ***Basic Functionality***
@@ -54,8 +55,8 @@ echo "<pre>";
           $alltasks = "SELECT * from tasks";
 
           foreach($this->conn->query($alltasks, "class", "Task") as $key => $value){
+            $i = $value->task_id;
             $this->tasks[$i] = $value;
-            $i++;
           }
         }
       }
