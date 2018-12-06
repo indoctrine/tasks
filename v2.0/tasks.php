@@ -10,13 +10,14 @@
           25-27 November 2018 - Wrote method to push all data into objects.
                               - Learnt about PDO::FETCH_CLASS
           28 November 2018    - Array is now indexed by task_id
+          6 December 2018     - renderlist() method outputs entire list of tasks
 
         TO DO:
           ***Basic Functionality***
           - Insert records incl. sanitising
           - Delete records
           - Mark completion of tasks
-          - Output entire task list
+          - Output entire task list ✔
 
           ***Intermediate Functions***
           - Show/Hide Completed
@@ -58,6 +59,33 @@ echo "<pre>";
             $i = $value->task_id;
             $this->tasks[$i] = $value;
           }
+        }
+
+        public function renderlist(){
+          echo "<table>
+            <tr>
+              <th>Task ID</th>
+              <th>Due Date</th>
+              <th>Priority</th>
+              <th>Completed</th>
+              <th>Description</th>
+            </tr>";
+
+          foreach($this->tasks as $key => $value){
+            echo "<tr>";
+
+            $value->completed = $value->completed == 1 ? "Yes" : "No";
+
+            foreach($value as $keyval => $taskcontents){
+              if($keyval == 'conn' || $keyval == 'tasklist_id'){
+                //*** Refector once multiple tasklists ***//
+                continue;
+              }
+              echo "<td>" . $taskcontents . "</td>";
+            }
+            echo "</tr>";
+          }
+          echo "</table>";
         }
       }
 
