@@ -11,6 +11,8 @@
                               - Learnt about PDO::FETCH_CLASS
           28 November 2018    - Array is now indexed by task_id
           6 December 2018     - renderlist() method outputs entire list of tasks
+          8 December 2018     - Changed renderlist() to two render() methods so
+                                the task object will render itself.
 
         TO DO:
           ***Basic Functionality***
@@ -48,44 +50,35 @@ echo "<pre>";
 
         function __construct(){
           parent::__construct();
-          $this->populatetasks();
+          $this->PopulateTasks();
         }
 
-        public function populatetasks(){
+        public function PopulateTasks(){
           $i = 0;
           $alltasks = "SELECT * from tasks";
 
-          foreach($this->conn->query($alltasks, "class", "Task") as $key => $value){
-            $i = $value->task_id;
-            $this->tasks[$i] = $value;
+          foreach($this->conn->query($alltasks, "class", "Task") as $row){
+            $i = $row->task_id;
+            $this->tasks[$i] = $row;
           }
         }
 
-        public function renderlist(){
-          echo "<table>
-            <tr>
-              <th>Task ID</th>
-              <th>Due Date</th>
-              <th>Priority</th>
-              <th>Completed</th>
-              <th>Description</th>
-            </tr>";
+        public function Render(){
+          echo '<form method="post" id="table" action="' . htmlspecialchars($_SERVER['PHP_SELF']) . '">';
+          echo '<table>';
+          echo '<tr>
+            <th>Task ID</th>
+            <th>Due Date</th>
+            <th>Priority</th>
+            <th>Completed</th>
+            <th>Description</th>
+          </tr>';
 
-          foreach($this->tasks as $key => $value){
-            echo "<tr>";
-
-            $value->completed = $value->completed == 1 ? "Yes" : "No";
-
-            foreach($value as $keyval => $taskcontents){
-              if($keyval == 'conn' || $keyval == 'tasklist_id'){
-                //*** Refector once multiple tasklists ***//
-                continue;
-              }
-              echo "<td>" . $taskcontents . "</td>";
-            }
-            echo "</tr>";
+          foreach($this->tasks as $task){
+            $task->Render();
           }
-          echo "</table>";
+          echo '</table>';
+          echo '</form>';
         }
       }
 
@@ -98,7 +91,28 @@ echo "<pre>";
           //$this->conn->execute(['duedate' => '2018-11-03', 'priority' => 5, 'description' => 'Hello World']);
         }
 
-        private function validatepost(){ //NOT IN USE YET
+        public function Render(){
+          echo '<tr>';
+          //$this->completed = $this->tasks->completed == 1 ? 'Yes' : 'No';
+          echo '<td>' . $this->task_id . '</td>';
+          echo '<td>' . $this->due_date . '</td>';
+          echo '<td>' . $this->priority . '</td>';
+          echo $this->completed == 1 ? '<td> Yes </td>' : '<td> No </td>';
+          echo '<td>' . $this->description . '</td>';
+          echo '<td><button type="submit" name="mark" form="table" value="' . $this->task_id . '">';
+          echo $this->completed == 1 ? '✕' : '✓';
+          echo '</button></td>'; //formaction="{$getself}"
+          echo '</tr>';
+        }
+
+        private function MarkComplete(){
+          //To do once figure out async. $_POST['mark'] will output the $task_id which is attached to the form element. Need to check this against the object on the row it was clicked on.
+          if(isset($_POST['mark']) && $this->task_id == $_POST['mark']){
+            echo "Hello World!";
+          }
+        }
+
+        private function ValidatePost(){ //NOT IN USE YET
           $this->priority = GetPost('priority', INT, 5);
 
           if($this->priority < 1 || $this->priority > 5){ //Valid range for priority is 1-5.
@@ -130,6 +144,7 @@ echo "<pre>";
         }
       }
 
-      $foo = new TaskList;
+      $tasklist[0] = new TaskList;
+
 echo "</pre>";
 ?>

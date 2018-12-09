@@ -14,6 +14,6 @@
   </head>
   <body>
     <?php require_once('tasks.php');
-    $foo->renderlist(); ?>
+    $tasklist[0]->Render(); ?>
   </body>
 </html>
