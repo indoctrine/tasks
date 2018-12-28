@@ -13,12 +13,14 @@
           6 December 2018     - renderlist() method outputs entire list of tasks
           8 December 2018     - Changed renderlist() to two render() methods so
                                 the task object will render itself.
+          28 December 2018    - Can now mark tasks as complete. This is done through
+                                an AJAX call from tasks.js which initiates markdelete.php.
 
         TO DO:
           ***Basic Functionality***
           - Insert records incl. sanitising
           - Delete records
-          - Mark completion of tasks
+          - Mark completion of tasks ✔
           - Output entire task list ✔
 
           ***Intermediate Functions***
@@ -32,8 +34,6 @@
           - Extend due date
           - Span across multiple pages (eg. 5 records to a page) possibly using AJAX.
       */
-
-echo "<pre>";
 
       class DatabaseConnectedClass{
         public $conn;
@@ -83,18 +83,19 @@ echo "<pre>";
       class Task extends DatabaseConnectedClass{
 
         function __construct(){
+          parent::__construct();
         }
 
         public function Render(){
-          echo '<tr>';
+          echo '<tr id="row_' . $this->task_id . '">';
           echo '<td>' . $this->task_id . '</td>';
-          echo '<td>' . $this->due_date . '</td>';
+          echo '<td class="due_col">' . $this->due_date . '</td>';
           echo '<td>' . $this->priority . '</td>';
-          echo $this->completed == 1 ? '<td> Yes </td>' : '<td> No </td>';
+          echo $this->completed == 1 ? '<td class="comp_col"> Yes </td>' : '<td class="comp_col"> No </td>';
           echo '<td>' . $this->description . '</td>';
           echo '<td><button class="mark" value="' . $this->task_id . '">';
           echo $this->completed == 1 ? '✕' : '✓';
-          echo '</button></td>'; //formaction="{$getself}"
+          echo '</button></td>';
           echo '</tr>';
         }
 
@@ -102,7 +103,8 @@ echo "<pre>";
           if(isset($_POST['mark']) && $_POST['mark'] == $this->task_id){
             $this->conn->prepare('UPDATE tasks SET completed = NOT completed WHERE task_id = :taskid');
             $this->conn->execute(['taskid' => $this->task_id]);
-            $this->completed = !$this->completed;
+            $this->completed ^= true; //XOR bit flip.
+            echo $this->completed;
           }
         }
 
@@ -139,6 +141,4 @@ echo "<pre>";
       }
 
       $tasklist[0] = new TaskList;
-
-echo "</pre>";
 ?>
