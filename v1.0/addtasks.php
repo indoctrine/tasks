@@ -104,8 +104,8 @@
 
         public function addtask(){
           try{
-            $stmt = $this->pdo->prepare('INSERT INTO tasks (due_date, priority, description) VALUES (:duedate, :priority, :description)');
-            $stmt->execute(['duedate' => $this->duedate->format('Y-m-d'), 'priority' => $this->priority, 'description' => $this->description]);
+            $stmt = $this->pdo->prepare('INSERT INTO tasks (due_date, priority, description, completed) VALUES (:duedate, :priority, :description, :completed)');
+            $stmt->execute(['duedate' => $this->duedate->format('Y-m-d'), 'priority' => $this->priority, 'description' => $this->description, 'completed' => 0]);
             echo "<br>Task Successfully Recorded";
           }
           catch(PDOException $e){
