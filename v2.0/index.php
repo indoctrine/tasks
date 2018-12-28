@@ -7,7 +7,7 @@
         border-collapse: collapse;
       }
       table,th,td{
-        border: solid 1px;
+        border: solid 1px #000;
         padding: 4px;
       }
     </style>
@@ -17,6 +17,7 @@
     $tasklist[0]->Render(); ?>
     <p id = "output"></p>
     <script src="../../jquery-3.3.1.js"></script>
+    <script src="../../jQuery.date.js"></script>
     <script src="tasks.js"></script>
   </body>
 </html>
