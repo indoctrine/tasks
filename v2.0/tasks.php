@@ -1,63 +1,23 @@
 <?php declare(strict_types=1);
       require_once('../../strict-typing.php');
-      /*
-                                Task List
-                  Stores a list of tasks and allows completion.
-                          An exercise in OO programming.
+      require_once('db.php');
+      
+      $_db = new Database('localhost', 'tasks', 'tasks', 'abc123');
 
-        CHANGES:
-          20 October 2018     - File created.
-          25-27 November 2018 - Wrote method to push all data into objects.
-                              - Learnt about PDO::FETCH_CLASS
-          28 November 2018    - Array is now indexed by task_id
-          6 December 2018     - renderlist() method outputs entire list of tasks
-          8 December 2018     - Changed renderlist() to two render() methods so
-                                the task object will render itself.
-          28 December 2018    - Can now mark tasks as complete. This is done through
-                                an AJAX call from tasks.js which initiates markdelete.php.
-
-        TO DO:
-          ***Basic Functionality***
-          - Insert records incl. sanitising
-          - Delete records
-          - Mark completion of tasks ✔
-          - Output entire task list ✔
-
-          ***Intermediate Functions***
-          - Show/Hide Completed
-          - Update/edit records
-          - Sort by date/priority
-          - Search by date/priority
-
-          ***Advanced Functions***
-          - Multiple users
-          - Extend due date
-          - Span across multiple pages (eg. 5 records to a page) possibly using AJAX.
-      */
-
-      class DatabaseConnectedClass{
-        public $conn;
-
-        function __construct(){
-          require_once('db.php');
-          $this->conn = new Database('localhost', 'tasks', 'tasks', 'abc123');
-        }
-      }
-
-      class TaskList extends DatabaseConnectedClass{
+      class TaskList{
         private $name;
         public $tasks = [];
 
         function __construct(){
-          parent::__construct();
           $this->PopulateTasks();
         }
 
         public function PopulateTasks(){
+          global $_db;
           $i = 0;
           $alltasks = "SELECT * from tasks";
 
-          foreach($this->conn->query($alltasks, "class", "Task") as $row){
+          foreach($_db->query($alltasks, "class", "Task") as $row){
             $i = $row->task_id;
             $this->tasks[$i] = $row;
           }
@@ -80,10 +40,9 @@
         }
       }
 
-      class Task extends DatabaseConnectedClass{
+      class Task{
 
         function __construct(){
-          parent::__construct();
         }
 
         public function Render(){
@@ -100,9 +59,11 @@
         }
 
         public function MarkComplete(){
+          global $_db;
+
           if(isset($_POST['mark']) && $_POST['mark'] == $this->task_id){
-            $this->conn->prepare('UPDATE tasks SET completed = NOT completed WHERE task_id = :taskid');
-            $this->conn->execute(['taskid' => $this->task_id]);
+            $_db->prepare('UPDATE tasks SET completed = NOT completed WHERE task_id = :taskid');
+            $_db->execute(['taskid' => $this->task_id]);
             $this->completed ^= true; //XOR bit flip.
             echo $this->completed;
           }
