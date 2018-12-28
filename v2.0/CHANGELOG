@@ -1,0 +1,25 @@
+                          Task List
+            Stores a list of tasks and allows completion.
+                    An exercise in OO programming.
+
+  CHANGELOG tasks.php:
+    20 October 2018     - File created.
+    25-27 November 2018 - Wrote method to push all data into objects.
+                        - Learnt about PDO::FETCH_CLASS
+    28 November 2018    - Array is now indexed by task_id
+    6 December 2018     - renderlist() method outputs entire list of tasks
+    8 December 2018     - Changed renderlist() to two render() methods so
+                          the task object will render itself.
+    28 December 2018    - Can now mark tasks as complete. This is done through
+                          an AJAX call from tasks.js which initiates markdelete.php.
+    29 December 2018    - Updated database connector to use a global variable.
+                          It's okay, my art teacher said it was fine.
+
+  CHANGELOG tasks.js:
+    28 December 2018    - File created.
+                        - Makes AJAX call to markdelete.php to set marked on records.
+                        - Updates the buttons and column values in the table.
+                        - Colours date fields in red where they are due today or overdue.
+
+  CHANGELOG markdelete.php:
+    28 December 2018    - File created.

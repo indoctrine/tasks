@@ -1,0 +1,17 @@
+TO DO:
+  ***Basic Functionality***
+  - Insert records incl. sanitising
+  - Delete records
+  - Mark completion of tasks ✔
+  - Output entire task list ✔
+
+  ***Intermediate Functions***
+  - Show/Hide Completed
+  - Update/edit records
+  - Sort by date/priority
+  - Search by date/priority
+
+  ***Advanced Functions***
+  - Multiple users
+  - Extend due date
+  - Span across multiple pages (eg. 5 records to a page) possibly using AJAX.
