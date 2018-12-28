@@ -64,7 +64,6 @@ echo "<pre>";
         }
 
         public function Render(){
-          echo '<form method="post" id="table" action="' . htmlspecialchars($_SERVER['PHP_SELF']) . '">';
           echo '<table>';
           echo '<tr>
             <th>Task ID</th>
@@ -78,37 +77,32 @@ echo "<pre>";
             $task->Render();
           }
           echo '</table>';
-          echo '</form>';
         }
       }
 
       class Task extends DatabaseConnectedClass{
 
         function __construct(){
-          //$i = 0;
-          //print_r($this->conn->query("SELECT * FROM tasks"));
-          //$this->conn->prepare('INSERT INTO tasks (due_date, priority, description) VALUES (:duedate, :priority, :description)');
-          //$this->conn->execute(['duedate' => '2018-11-03', 'priority' => 5, 'description' => 'Hello World']);
         }
 
         public function Render(){
           echo '<tr>';
-          //$this->completed = $this->tasks->completed == 1 ? 'Yes' : 'No';
           echo '<td>' . $this->task_id . '</td>';
           echo '<td>' . $this->due_date . '</td>';
           echo '<td>' . $this->priority . '</td>';
           echo $this->completed == 1 ? '<td> Yes </td>' : '<td> No </td>';
           echo '<td>' . $this->description . '</td>';
-          echo '<td><button type="submit" name="mark" form="table" value="' . $this->task_id . '">';
+          echo '<td><button class="mark" value="' . $this->task_id . '">';
           echo $this->completed == 1 ? '✕' : '✓';
           echo '</button></td>'; //formaction="{$getself}"
           echo '</tr>';
         }
 
-        private function MarkComplete(){
-          //To do once figure out async. $_POST['mark'] will output the $task_id which is attached to the form element. Need to check this against the object on the row it was clicked on.
-          if(isset($_POST['mark']) && $this->task_id == $_POST['mark']){
-            echo "Hello World!";
+        public function MarkComplete(){
+          if(isset($_POST['mark']) && $_POST['mark'] == $this->task_id){
+            $this->conn->prepare('UPDATE tasks SET completed = NOT completed WHERE task_id = :taskid');
+            $this->conn->execute(['taskid' => $this->task_id]);
+            $this->completed = !$this->completed;
           }
         }
 

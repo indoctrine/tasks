@@ -15,5 +15,8 @@
   <body>
     <?php require_once('tasks.php');
     $tasklist[0]->Render(); ?>
+    <p id = "output"></p>
+    <script src="../../jquery-3.3.1.js"></script>
+    <script src="tasks.js"></script>
   </body>
 </html>
