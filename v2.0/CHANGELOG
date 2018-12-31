@@ -14,12 +14,19 @@
                           an AJAX call from tasks.js which initiates markdelete.php.
     29 December 2018    - Updated database connector to use a global variable.
                           It's okay, my art teacher said it was fine.
+    31 December 2018    - Created DeleteTask() method to handle deletion of tasks.
+                        - Learned that you cannot delete the current task, so that's cool, I guess.
+                        - Render() will now check if there is anything in the array before
+                          pooping out a table. Good boy, Render().
 
   CHANGELOG tasks.js:
     28 December 2018    - File created.
                         - Makes AJAX call to markdelete.php to set marked on records.
                         - Updates the buttons and column values in the table.
                         - Colours date fields in red where they are due today or overdue.
+    31 December 2018    - Added $.post for delete button, which includes confirmation of the delete
+                          and resultant removal of the table row.
 
   CHANGELOG markdelete.php:
     28 December 2018    - File created.
+    31 December 2018    - Added handler for deletion, which calls DeleteTask() in tasks.php

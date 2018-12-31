@@ -1,11 +1,11 @@
 <?php declare(strict_types=1);
       require_once('../../strict-typing.php');
       require_once('db.php');
-      
+
       $_db = new Database('localhost', 'tasks', 'tasks', 'abc123');
 
       class TaskList{
-        private $name;
+
         public $tasks = [];
 
         function __construct(){
@@ -24,19 +24,24 @@
         }
 
         public function Render(){
-          echo '<table>';
-          echo '<tr>
-            <th>Task ID</th>
-            <th>Due Date</th>
-            <th>Priority</th>
-            <th>Completed</th>
-            <th>Description</th>
-          </tr>';
+          if($this->tasks){ //Don't render anything if there aren't any tasks.
+            echo '<table>';
+            echo '<tr>
+              <th>Task ID</th>
+              <th>Due Date</th>
+              <th>Priority</th>
+              <th>Completed</th>
+              <th>Description</th>
+            </tr>';
 
-          foreach($this->tasks as $task){
-            $task->Render();
+            foreach($this->tasks as $task){
+              $task->Render();
+            }
+            echo '</table>';
           }
-          echo '</table>';
+          else{
+            exit;
+          }
         }
       }
 
@@ -51,10 +56,11 @@
           echo '<td class="due_col">' . $this->due_date . '</td>';
           echo '<td>' . $this->priority . '</td>';
           echo $this->completed == 1 ? '<td class="comp_col"> Yes </td>' : '<td class="comp_col"> No </td>';
-          echo '<td>' . $this->description . '</td>';
+          echo '<td class="desc">' . $this->description . '</td>';
           echo '<td><button class="mark" value="' . $this->task_id . '">';
           echo $this->completed == 1 ? '✕' : '✓';
           echo '</button></td>';
+          echo '<td><button class="delete" value="' . $this->task_id . '">Delete</button></td>';
           echo '</tr>';
         }
 
@@ -66,6 +72,19 @@
             $_db->execute(['taskid' => $this->task_id]);
             $this->completed ^= true; //XOR bit flip.
             echo $this->completed;
+          }
+        }
+
+        public function DeleteTask(){
+          global $_db;
+
+          if(isset($_POST['delete']) && $_POST['delete'] == $this->task_id){
+            $_db->prepare('DELETE FROM tasks WHERE task_id = :taskid');
+            $_db->execute(['taskid' => $this->task_id]);
+            echo "Task successfully deleted.";
+          }
+          else{
+            echo "Task not deleted.";
           }
         }
 

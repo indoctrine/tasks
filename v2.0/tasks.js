@@ -21,21 +21,41 @@ $(document).ready(() => {
         'markdelete.php',
         {
           'submit': true,
-          'mark': mark
+          'mark': mark,
+          'delete': null
         },
-        response => {
-          if(response == 1){
+        markresponse => {
+          if(markresponse == 1){
             $(this).html('✕');
-            $('#row_' + mark).children('.comp_col').html('Yes');
+            $('#row_' + mark).children('.comp_col').text('Yes');
           }
-          else if(response == 0){
+          else if(markresponse == 0){
             $(this).html('✓');
-            $('#row_' + mark).children('.comp_col').html('No');
+            $('#row_' + mark).children('.comp_col').text('No');
           }
           else{
-            $('#output').html(response);
+            $('#output').text(markresponse);
           }
         }
     );
+  });
+
+  $('.delete').on('click', function() {
+    const del = $(this).val();
+
+    if(confirm("Are you sure you want to delete the following task? \n\n" + $('#row_' + del).children('.desc').text())){
+      $.post(
+        'markdelete.php',
+        {
+          'submit': true,
+          'mark': null,
+          'delete': del
+        },
+        delresponse => {
+          $('#output').text(delresponse);
+        }
+      )
+      $('#row_' + del).remove();
+    }
   });
 });
