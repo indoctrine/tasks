@@ -15,7 +15,7 @@
         public function PopulateTasks(){
           global $_db;
           $i = 0;
-          $alltasks = "SELECT * from tasks";
+          $alltasks = "SELECT * FROM tasks ORDER BY due_date DESC";
 
           foreach($_db->query($alltasks, "class", "Task") as $row){
             $i = $row->task_id;
@@ -25,19 +25,23 @@
 
         public function Render(){
           if($this->tasks){ //Don't render anything if there aren't any tasks.
-            echo '<table>';
-            echo '<tr>
-              <th>Task ID</th>
-              <th>Due Date</th>
-              <th>Priority</th>
-              <th>Completed</th>
-              <th>Description</th>
-            </tr>';
+            echo '<table id="taskoutput">';
+            echo '<thead>
+              <tr>
+                <th><span>Task ID</span></th>
+                <th><span>Due Date</span></th>
+                <th><span>Priority</span></th>
+                <th><span>Completed</span></th>
+                <th><span>Description</span></th>
+              </tr>
+            </thead>
+            <tbody>';
 
             foreach($this->tasks as $task){
               $task->Render();
             }
-            echo '</table>';
+            echo '</tbody>
+              </table>';
           }
           else{
             exit;

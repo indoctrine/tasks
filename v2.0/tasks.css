@@ -1,0 +1,75 @@
+body {
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: 75%;
+  line-height: 1;
+  color: #000000;
+}
+
+#taskoutput {
+  font-size: 1.2em;
+  margin-bottom: 15px;
+  border-collapse: collapse;
+}
+
+[id^="row"]{
+  border: 1px solid #000;
+}
+
+#taskoutput thead {
+  cursor: pointer;
+  background: #cccccc;
+}
+#taskoutput thead tr th {
+  font-weight: bold;
+  padding: 12px 30px;
+  padding-left: 42px;
+}
+#taskoutput thead tr th span {
+  padding-right: 20px;
+  background-repeat: no-repeat;
+  background-position: 100% 100%;
+}
+
+#taskoutput thead tr th.headerSortUp, #taskoutput thead tr th.headerSortDown {
+  background: #aaaaaa;
+}
+
+#taskoutput thead tr th.headerSortUp span {
+  background-image: url('images/up-arrow.png');
+}
+#taskoutput thead tr th.headerSortDown span {
+  background-image: url('images/down-arrow.png');
+}
+
+#taskoutput thead tr th.defsort span {
+  background-image: url('images/up-arrow.png');
+}
+
+#taskoutput tbody tr {
+  color: #000000;
+}
+#taskoutput tbody tr td {
+  text-align: center;
+  padding: 5px 5px;
+}
+#taskoutput tbody tr td.lalign {
+  text-align: left;
+}
+
+button{
+  background-color: #cccccc;
+  color: black;
+  border: 2px solid #aaaaaa;
+}
+
+.deleteme{
+  background-color: #FF6961;
+}
+
+#dialog-confirm{
+  background-color: #FF6961;
+}
+
+.overdue{
+  color: red;
+}

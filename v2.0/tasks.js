@@ -1,18 +1,17 @@
-/*
-                    Task List
-    CHANGES:
-      28 December 2018  - File created.
-                        - Makes AJAX call to markdelete.php to set marked on records.
-                        - Updates the buttons and column values in the table.
-                        - Colours date fields in red where they are due today or overdue.
-*/
-
-
 $(document).ready(() => {
   today = $.date('Y-m-d');
-  $('.due_col').each(function(){
-    $(this).html() <= today ? $(this).css('color', 'red') : ''; //Jen loves ternaries
-  });
+
+  function ddformat(){
+    $('.due_col').each(function(){
+      if($.trim($(this).siblings('.comp_col').text()) == "No" && $(this).text() <= today){
+        $(this).css('color', 'red');
+      }
+      else if($.trim($(this).siblings('.comp_col').text()) == "Yes"){
+        $(this).removeAttr('style');
+      }
+    });
+  }
+  ddformat();
 
   $('.mark').on('click', function() {
     const mark = $(this).val();
@@ -28,10 +27,12 @@ $(document).ready(() => {
           if(markresponse == 1){
             $(this).html('✕');
             $('#row_' + mark).children('.comp_col').text('Yes');
+            ddformat();
           }
           else if(markresponse == 0){
             $(this).html('✓');
             $('#row_' + mark).children('.comp_col').text('No');
+            ddformat();
           }
           else{
             $('#output').text(markresponse);
@@ -42,20 +43,32 @@ $(document).ready(() => {
 
   $('.delete').on('click', function() {
     const del = $(this).val();
+    $('#row_' + del).toggleClass('deleteme');
 
-    if(confirm("Are you sure you want to delete the following task? \n\n" + $('#row_' + del).children('.desc').text())){
-      $.post(
-        'markdelete.php',
-        {
-          'submit': true,
-          'mark': null,
-          'delete': del
-        },
-        delresponse => {
-          $('#output').text(delresponse);
-        }
-      )
-      $('#row_' + del).remove();
-    }
+    setTimeout(function(){ //Wait a short period to prompt.
+      if(confirm("Are you sure you want to delete this task?")){
+        $.post(
+          'markdelete.php',
+          {
+            'submit': true,
+            'mark': null,
+            'delete': del
+          },
+          delresponse => {
+            $('#output').text(delresponse);
+          }
+        )
+        $('#row_' + del).fadeOut("normal", function() {
+          $('#row_' + del).remove();
+        });
+      }
+      else{
+        $('#row_' + del).removeAttr('class');
+      }
+    }, 150);
+  });
+
+  $(function(){
+    $('#taskoutput').tablesorter();
   });
 });
