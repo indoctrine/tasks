@@ -25,12 +25,13 @@ $(document).ready(() => {
         },
         markresponse => {
           if(markresponse == 1){
-            $(this).html('✕');
+            $(this).text('✕');
             $('#row_' + mark).children('.comp_col').text('Yes');
+            $('#output').text(markresponse);
             ddformat();
           }
           else if(markresponse == 0){
-            $(this).html('✓');
+            $(this).text('✓');
             $('#row_' + mark).children('.comp_col').text('No');
             ddformat();
           }
@@ -70,5 +71,31 @@ $(document).ready(() => {
 
   $(function(){
     $('#taskoutput').tablesorter();
+  });
+
+  $('.addbutton').on('click', function() {
+    $('#addtask').toggle();
+  });
+
+  $('#addtask').on('submit', function() {
+    const pri = $('select[name = priority]').val();
+    const dd = $('input[name = duedate]').val();
+    const desc = $('textarea[name = description]').val();
+
+    $.post(
+      'addtask.php',
+      {
+        'submittask': true,
+        'priority': pri,
+        'due_date': dd,
+        'description': desc
+      },
+      response => {
+        $('#output').text(response);
+      }
+    )
+
+    console.log(pri, dd, desc);
+    return false;
   });
 });
