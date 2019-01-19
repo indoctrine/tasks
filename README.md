@@ -5,6 +5,9 @@ Stores a list of tasks and allows completion. An exercise in Object Oriented Pro
 
 ## CHANGELOG
 ```
+  CHANGELOG db.php
+    19 January 2019     - Added lastInsertID() function to accommodate task_id
+
   CHANGELOG tasks.php:
     20 October 2018     - File created.
     25-27 November 2018 - Wrote method to push all data into objects.
@@ -30,6 +33,10 @@ Stores a list of tasks and allows completion. An exercise in Object Oriented Pro
                           fields in future.
                         - Added additional checks on the date validation, as it was relying too heavily on
                           correct input by the user.
+    19 January 2019     - Huge reshuffle of validation methods.
+                        - Render() now always poops a table out but CSS/JS sweeps it under the rug if there aren't any tasks.
+                        - Uses a temporary object to do validation so we're not cluttering TaskList with random crap.
+                        - Added a few more data validation bits and pieces.
 
   CHANGELOG tasks.js:
     28 December 2018    - File created.
@@ -45,6 +52,9 @@ Stores a list of tasks and allows completion. An exercise in Object Oriented Pro
                           code slightly clearer.
                         - Sorting using an external library. May write my own at some point.
     16 January 2019     - Added form event handler after fighting with caching.
+    19 January 2019     - Dynamically shows and hides the table based on the existence of any data rows (#row_x).
+                        - Deleting the last task hides the table. Adding one brings the table back.
+                        - Adding a task adds a row to the table at the top.
 
   CHANGELOG markdelete.php:
     28 December 2018    - File created.
