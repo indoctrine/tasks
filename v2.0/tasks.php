@@ -7,6 +7,7 @@
       class TaskList{
 
         public $tasks = [];
+        public $tempobject;
 
         function __construct(){
           $this->PopulateTasks();
@@ -24,72 +25,55 @@
         }
 
         public function Render(){
-          if($this->tasks){ //Don't render anything if there aren't any tasks.
-            echo '<table id="taskoutput">';
-            echo '<thead>
-              <tr>
-                <th><span>Task ID</span></th>
-                <th><span>Due Date</span></th>
-                <th><span>Priority</span></th>
-                <th><span>Description</span></th>
-                <th><span>Completed</span></th>
-                <td>Mark?</td>
-                <td>Delete?</td>
-              </tr>
-            </thead>
-            <tbody>';
+          echo '<table id="taskoutput">';
+          echo '<thead>
+            <tr>
+              <th><span>Task ID</span></th>
+              <th><span>Due Date</span></th>
+              <th><span>Priority</span></th>
+              <th><span>Description</span></th>
+              <th><span>Completed</span></th>
+              <td>Mark?</td>
+              <td>Delete?</td>
+            </tr>
+          </thead>
+          <tbody>';
 
-            foreach($this->tasks as $task){
-              $task->Render();
-            }
-            echo '</tbody>
-              </table>';
+          foreach($this->tasks as $task){
+            $task->Render();
           }
-          else{
-            exit;
-          }
+          echo '</tbody>
+            </table>';
         }
 
         public function ValidatePost(){
-          $this->priority = GetPost('priority', INT, 5);
-          $this->ValidatePriority($this->priority);
-
-          $this->date = $_POST['due_date'];
-          $this->ValidateDate($this->date);
-
-          $this->description = GetPost('description', STRING, null);
-        }
-
-        private function ValidatePriority($pri){
-          if($pri < 1 || $pri > 5 || !is_numeric($pri)){ //Valid range for priority is 1-5.
-            $this->priority = 5; //5 is least urgent therefore default value.
+          try{
+            $this->tempobject = new Task;
+            $this->tempobject->ValidatePriority($_POST['priority']);
+            $this->tempobject->ValidateDate($_POST['due_date']);
+            $this->tempobject->ValidateDesc();
+            $this->AddTask();
+          }
+          catch(Exception $e){
+            echo "Something went wrong with your data. $e";
           }
         }
 
-        private function ValidateDate($date){
-          $now = new DateTime();
-          $now->setTime(23, 59, 59); //Set current time to avoid time-related calc errors
-          $default_date = clone $now;
-          $default_date->modify('+1 week'); //Set a sane default
+        private function AddTask(){
+          global $_db;
+          $_db->prepare('INSERT INTO tasks(priority, due_date, description, completed)
+                        VALUES (:priority, :due_date, :description, :completed)');
+          $_db->execute(['priority' => $this->tempobject->priority,
+                        'due_date' => $this->tempobject->due_date->format('Y-m-d'),
+                        'description' => $this->tempobject->description,
+                        'completed' => 0]);
 
-          if(DateTime::createFromFormat('Y-m-d', $date) !== false){ //Attempt to force input to preferred format
-            $this->due_date = new DateTime($date);
-          }
-          else{
-            $this->due_date = clone $default_date;
-          }
+          $this->tempobject = 0;
+          $newtask_id = (int)$_db->lastInsertID();
+          $this->tasks[$newtask_id] = $_db->query("SELECT * FROM tasks WHERE task_id = $newtask_id", "class", "Task");
 
-          $this->due_date->setTime(23, 59, 59);
-          $this->due_date->format('Y-m-d');
-
-          if($this->due_date < $now){
-            //Checks if due date is before today and set to sensible default if so.
-            $this->due_date = clone $default_date;
-          }
-        }
-
-        public function AddTask(){
-          echo "Hello!~";
+          $jsonout = json_encode($this->tasks[$newtask_id]);
+          echo $jsonout;
         }
       }
 
@@ -113,13 +97,44 @@
           echo '</tr>';
         }
 
+        public function ValidatePriority($pri){
+          $this->priority = GetPost('priority', INT, 5);
+          if($this->priority < 1 || $this->priority > 5 || !is_numeric($this->priority)){ //Valid range for priority is 1-5.
+            $this->priority = 5; //5 is least urgent therefore default value.
+          }
+        }
+
+        public function ValidateDate($date){
+          $now = new DateTime();
+          $now->setTime(23, 59, 59); //Set current time to avoid time-related calc errors
+          $default_date = clone $now;
+          $default_date->modify('+1 week'); //Set a sane default
+          $default_date->format('Y-m-d');
+
+          if(DateTime::createFromFormat('Y-m-d', $date) !== false
+            && DateTime::createFromFormat('Y-m-d', $date) > $now
+            && DateTime::createFromFormat('Y-m-d', $date) < '2099-12-31'){ //Attempt to force input to preferred format
+            $this->due_date = new DateTime($date);
+          }
+          else{
+            $this->due_date = clone $default_date;
+          }
+
+          $this->due_date->setTimezone(new DateTimeZone('Australia/Adelaide'));
+          $this->due_date->setTime(23, 59, 59);
+        }
+
+        public function ValidateDesc(){
+          $this->description = GetPost('description', STRING, null);
+        }
+
         public function MarkComplete(){
           global $_db;
 
           if(isset($_POST['mark']) && $_POST['mark'] == $this->task_id){
             try{
-              $_db->prepare('UPDATE tasks SET completed = NOT completed WHERE task_id = :taskid');
-              $_db->execute(['taskid' => $this->task_id]);
+              $_db->prepare('UPDATE tasks SET completed = NOT completed WHERE task_id = :task_id');
+              $_db->execute(['task_id' => $this->task_id]);
               $this->completed ^= true; //XOR bit flip.
               echo $this->completed;
             }

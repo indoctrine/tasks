@@ -1,4 +1,8 @@
 $(document).ready(() => {
+  if($('*[id^="row_"]').length > 0){
+    $('#taskoutput').show();
+  }
+
   today = $.date('Y-m-d');
 
   function ddformat(){
@@ -13,7 +17,50 @@ $(document).ready(() => {
   }
   ddformat();
 
-  $('.mark').on('click', function() {
+  $('#addtask').on('submit', function() {
+    const pri = $('select[name = priority]').val();
+    const dd = $('input[name = duedate]').val();
+    const desc = $('textarea[name = description]').val();
+    $('#taskoutput').show();
+
+    $.post(
+      'addtask.php',
+      {
+        'submittask': true,
+        'priority': pri,
+        'due_date': dd,
+        'description': desc
+      },
+      response => {
+        if($('#taskoutput').length){
+          var taskdata = JSON.parse(response);
+          var id = taskdata[0].task_id;
+          var ddate = taskdata[0].due_date;
+          var priority = taskdata[0].priority;
+          var desc = taskdata[0].description;
+          var comp = taskdata[0].completed == 1 ? 'Yes' : 'No';
+          var tick = taskdata[0].completed == 1 ? '✕' : '✓';
+
+          var markup = '<tr id="row_' + id + '">' +
+            '<td>' + id + '</td>' +
+            '<td class="due_col">' + ddate + '</td>' +
+            '<td>' + priority + '</td>' +
+            '<td class="desc">' + desc + '</td>' +
+            '<td class="comp_col">' + comp + '</td>' +
+            '<td><button class="mark" value="' + id + '">' + tick + '</button></td>' +
+            '<td><button class="delete" value="' + id + '">X</button></td>';
+
+          $('#taskoutput tbody').prepend(markup);
+          $('.mark');
+          $('#output').text('Task ' + id + ' successfully added.')
+          ddformat();
+        }
+      }
+    )
+    return false;
+  });
+
+  $('body').on('click', '.mark', function() {
     const mark = $(this).val();
 
     $.post(
@@ -27,7 +74,6 @@ $(document).ready(() => {
           if(markresponse == 1){
             $(this).text('✕');
             $('#row_' + mark).children('.comp_col').text('Yes');
-            $('#output').text(markresponse);
             ddformat();
           }
           else if(markresponse == 0){
@@ -42,7 +88,7 @@ $(document).ready(() => {
     );
   });
 
-  $('.delete').on('click', function() {
+  $('body').on('click', '.delete', function() {
     const del = $(this).val();
     $('#row_' + del).toggleClass('deleteme');
 
@@ -61,6 +107,9 @@ $(document).ready(() => {
         )
         $('#row_' + del).fadeOut("normal", function() {
           $('#row_' + del).remove();
+          if($('*[id^="row_"]').length == 0){
+            $('#taskoutput').hide();
+          }
         });
       }
       else{
@@ -71,31 +120,5 @@ $(document).ready(() => {
 
   $(function(){
     $('#taskoutput').tablesorter();
-  });
-
-  $('.addbutton').on('click', function() {
-    $('#addtask').toggle();
-  });
-
-  $('#addtask').on('submit', function() {
-    const pri = $('select[name = priority]').val();
-    const dd = $('input[name = duedate]').val();
-    const desc = $('textarea[name = description]').val();
-
-    $.post(
-      'addtask.php',
-      {
-        'submittask': true,
-        'priority': pri,
-        'due_date': dd,
-        'description': desc
-      },
-      response => {
-        $('#output').text(response);
-      }
-    )
-
-    console.log(pri, dd, desc);
-    return false;
   });
 });

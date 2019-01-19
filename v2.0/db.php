@@ -79,5 +79,10 @@
           $results = $this->execstmt->execute($params);
           return $this->execstmt;
         }
+
+        public function lastInsertID(){
+          $this->execstmt = $this->pdo->lastInsertId();
+          return $this->execstmt;
+        }
       }
 ?>

@@ -5,13 +5,13 @@ body {
   color: #000000;
 }
 
-#output{
-  padding-left: 10%;
-  font-size: 120%;
+#addtask{
+  float: right;
+  width: 50%;
 }
 
-#addtask{
-  display: none;
+#output{
+  font-size: 120%;
 }
 
 input[type="date"], select, textarea{
@@ -27,12 +27,15 @@ input[type="submit"], input[type="reset"]{
     border: 2px solid #aaaaaa;
 }
 
+.desc{
+  max-width: 225px;
+}
+
 .addbutton{
   float: left;
 }
 
 .split{
-  height: 100%;
   width: 75%;
   position: fixed;
   z-index: 1;
@@ -49,14 +52,17 @@ input[type="submit"], input[type="reset"]{
   right: 0;
 }
 
+[id^="row"]{
+  border: 1px solid #000;
+}
+
 #taskoutput {
   font-size: 1.2em;
   margin-bottom: 15px;
   border-collapse: collapse;
-}
-
-[id^="row"]{
-  border: 1px solid #000;
+  width: 50%
+  table-layout: fixed;
+  display: none;
 }
 
 #taskoutput thead {
