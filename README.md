@@ -5,7 +5,7 @@ Stores a list of tasks and allows completion. An exercise in Object Oriented Pro
 
 ## CHANGELOG
 ```
-  tasks.php:
+  CHANGELOG tasks.php:
     20 October 2018     - File created.
     25-27 November 2018 - Wrote method to push all data into objects.
                         - Learnt about PDO::FETCH_CLASS
@@ -21,16 +21,35 @@ Stores a list of tasks and allows completion. An exercise in Object Oriented Pro
                         - Learned that you cannot delete the current task, so that's cool, I guess.
                         - Render() will now check if there is anything in the array before
                           pooping out a table. Good boy, Render().
+    3 January 2019      - Default output order is now due_date descending.
+                        - Spans for the headers to make the sorting thing work.
+    16 January 2019     - Moved ValidatePost method up to the TaskList class as I realised that there
+                          won't be any task to call it on yet.
+                        - Separated ValidatePost out into separate validation methods that are called by
+                          ValidatePost in order to compartmentalise things more and make it easier to add
+                          fields in future.
+                        - Added additional checks on the date validation, as it was relying too heavily on
+                          correct input by the user.
 
-  tasks.js:
+  CHANGELOG tasks.js:
     28 December 2018    - File created.
                         - Makes AJAX call to markdelete.php to set marked on records.
                         - Updates the buttons and column values in the table.
                         - Colours date fields in red where they are due today or overdue.
     31 December 2018    - Added $.post for delete button, which includes confirmation of the delete
                           and resultant removal of the table row.
+    3 January 2019      - Date field now distinguishes between whether the task is completed or not
+                          and colours appropriately.
+                        - Fancy red background to highlight which task you just clicked the delete button on.
+                        - The above removed the need to print the task name in the confirm box and made the
+                          code slightly clearer.
+                        - Sorting using an external library. May write my own at some point.
+    16 January 2019     - Added form event handler after fighting with caching.
 
-  markdelete.php:
+  CHANGELOG markdelete.php:
     28 December 2018    - File created.
     31 December 2018    - Added handler for deletion, which calls DeleteTask() in tasks.php
+
+  CHANGELOG addtask.php:
+    16 January 2019     - File created.
 ```
