@@ -1,5 +1,4 @@
 TO DO:
-  - Fix handling of first task insert, needs to render table. Currently does not.
 
   ***Basic Functionality***
   - Insert records incl. sanitising ✔
