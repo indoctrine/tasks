@@ -5,7 +5,6 @@
       $_db = new Database('localhost', 'tasks', 'tasks', 'abc123');
 
       class TaskList{
-
         public $tasks = [];
         public $tempobject;
 
@@ -159,6 +158,4 @@
           }
         }
       }
-
-      $tasklist[0] = new TaskList;
 ?>

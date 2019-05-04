@@ -32,6 +32,7 @@ $(document).ready(() => {
         'description': desc
       },
       response => {
+        console.log(response);
         if($('#taskoutput').length){
           var taskdata = JSON.parse(response);
           var id = taskdata[0].task_id;

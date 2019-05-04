@@ -28,6 +28,8 @@
       <p id = "output"></p>
     </form>
     <?php require_once('tasks.php');
+    $tasklist = [];
+    $tasklist[0] = new TaskList;
     $tasklist[0]->Render(); ?>
   </body>
 </html>
